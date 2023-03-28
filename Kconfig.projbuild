@@ -5,8 +5,8 @@ menu "VL53L3CX"
         default 0x29
     config VL53_SHUTDONW_PIN
         int "SHUTDONW Pin"
-        default 13
+        default 17
     config VL53_INTERRUPT_PIN
         int "INTERRUPT Pin"
-        default 11     
+        default 18     
 endmenu
