@@ -5,7 +5,7 @@
 #include <vl53lx_class.hpp>
 using namespace Components;
 unsigned long millis();
-class Vl53lxWrapper
+class Vl53lxSensor
 {
 private:
   unsigned long timeSinceLastInterruptClear = millis();
@@ -19,7 +19,7 @@ private:
   void clearInterrupt();
 
 public:
-  Vl53lxWrapper(
+  Vl53lxSensor(
       int xshutPin,
       int interruptPin,
       int sensorDeviceAddress,
@@ -27,6 +27,6 @@ public:
 
   VL53LX_MultiRangingData_t getLatestMeasurement();
 
-  ~Vl53lxWrapper();
+  ~Vl53lxSensor();
 };
 #endif

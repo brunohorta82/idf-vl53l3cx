@@ -5,7 +5,7 @@
 #include "esp_timer.h"
 #include <esp_log.h>
 #include "driver/gpio.h"
-Vl53lxWrapper::Vl53lxWrapper(
+Vl53lxSensor::Vl53lxSensor(
     int xshutPin,
     int interruptPin,
     int sensorDeviceAddress,
@@ -29,7 +29,7 @@ Vl53lxWrapper::Vl53lxWrapper(
   clearInterrupt();
 }
 
-void Vl53lxWrapper::endlessLoop()
+void Vl53lxSensor::endlessLoop()
 {
   while (true)
   {
@@ -37,14 +37,14 @@ void Vl53lxWrapper::endlessLoop()
   }
 }
 
-void Vl53lxWrapper::clearInterrupt()
+void Vl53lxSensor::clearInterrupt()
 {
   interruptTriggered = false;
   vl53lxInstance.VL53LX_ClearInterruptAndStartMeasurement();
   timeSinceLastInterruptClear = millis();
 }
 
-VL53LX_MultiRangingData_t Vl53lxWrapper::getLatestMeasurement()
+VL53LX_MultiRangingData_t Vl53lxSensor::getLatestMeasurement()
 {
   int status = 0;
 
@@ -70,7 +70,7 @@ VL53LX_MultiRangingData_t Vl53lxWrapper::getLatestMeasurement()
   return multiRangingData;
 }
 
-Vl53lxWrapper::~Vl53lxWrapper()
+Vl53lxSensor::~Vl53lxSensor()
 {
   // TODO i2c.~TwoWire();
 }
