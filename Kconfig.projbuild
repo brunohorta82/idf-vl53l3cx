@@ -7,12 +7,12 @@ menu "VL53L3CX"
         prompt  "VL53L3CX Time-of-Flight ranging sensor with multi target detection Address"
         default 0x29
         depends on VL53L3CX_ACTIVE
-    config VL53_SHUTDONW_PIN
-        int "SHUTDONW Pin"
+    config VL53_SHUTDOWN_PIN
+        int "Shutdown Pin"
         default 17
         depends on VL53L3CX_ACTIVE
     config VL53_INTERRUPT_PIN
-        int "INTERRUPT Pin"
+        int "Interrupt Pin"
         default 18 
         depends on VL53L3CX_ACTIVE
     config VL53_DISTANCE_OFFSET
