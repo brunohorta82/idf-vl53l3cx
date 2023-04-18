@@ -1,10 +1,11 @@
 
 #include <vl53lx_class.hpp>
 #include "Vl53lxSensor.hpp"
-#include "interrupt.hpp"
 #include "esp_timer.h"
+#include "interrupt.hpp"
 #include <esp_log.h>
 #include "driver/gpio.h"
+
 Vl53lxSensor::Vl53lxSensor(
     int xshutPin,
     int interruptPin,
@@ -25,53 +26,42 @@ Vl53lxSensor::Vl53lxSensor(
   gpio_config(&io_conf);
   gpio_install_isr_service(0);
   gpio_isr_handler_add((gpio_num_t)interruptPin, intaISR, (void *)interruptPin);
-  if (ESP_OK != error)
+  if (ESP_OK == error)
     ESP_LOGE("VL53LX", "ERROR: %d", error);
-  clearInterrupt();
-}
-
-void Vl53lxSensor::endlessLoop()
-{
-  while (true)
-  {
-    delay(100);
-  }
-}
-
-void Vl53lxSensor::clearInterrupt()
-{
-  interruptTriggered = false;
   vl53lxInstance.VL53LX_ClearInterruptAndStartMeasurement();
-  timeSinceLastInterruptClear = millis();
+  interruptTriggered = false;
 }
 
-VL53LX_MultiRangingData_t Vl53lxSensor::getLatestMeasurement()
+vector<Vl53lxSensorReadings> Vl53lxSensor::getLatestMeasurement()
 {
-  int status = 0;
+  vector<Vl53lxSensorReadings> readings;
+  VL53LX_MultiRangingData_t MultiRangingData;
+  VL53LX_MultiRangingData_t *pMultiRangingData = &MultiRangingData;
+  uint8_t NewDataReady = 0;
+  int no_of_object_found = 0, j;
+  char report[64];
 
-  if (!interruptTriggered)
+  if (interruptTriggered)
   {
-    if ((millis() - timeSinceLastInterruptClear) > 1000)
+    int status;
+    interruptTriggered = false;
+    status = vl53lxInstance.VL53LX_GetMeasurementDataReady(&NewDataReady);
+    if ((!status) && (NewDataReady != 0))
     {
-      clearInterrupt();
+      status = vl53lxInstance.VL53LX_GetMultiRangingData(pMultiRangingData);
+      no_of_object_found = pMultiRangingData->NumberOfObjectsFound;
+      snprintf(report, sizeof(report), "Count=%d, #Objs=%1d ", pMultiRangingData->StreamCount, no_of_object_found);
+      ESP_LOGI("VL", "%s", report);
+      for (j = 0; j < no_of_object_found; j++)
+      {
+        ESP_LOGI("VL", "status=%d Distance=%dmm Signal=%f Ambient%fmcps", pMultiRangingData->RangeData[j].RangeStatus, pMultiRangingData->RangeData[j].RangeMilliMeter, (float)pMultiRangingData->RangeData[j].SignalRateRtnMegaCps / 65536.0, (float)pMultiRangingData->RangeData[j].AmbientRateRtnMegaCps / 65536.0);
+      }
+      if (status == 0)
+      {
+        status = vl53lxInstance.VL53LX_ClearInterruptAndStartMeasurement();
+      }
     }
-    return multiRangingData;
   }
 
-  uint8_t NewDataReady = 0;
-  status = vl53lxInstance.VL53LX_GetMeasurementDataReady(&NewDataReady);
-  if (status != 0 || NewDataReady == 0)
-    return multiRangingData;
-
-  status = vl53lxInstance.VL53LX_GetMultiRangingData(&multiRangingData);
-  clearInterrupt();
-  if (status != 0)
-    return multiRangingData;
-
-  return multiRangingData;
-}
-
-Vl53lxSensor::~Vl53lxSensor()
-{
-  // TODO i2c.~TwoWire();
+  return readings;
 }
