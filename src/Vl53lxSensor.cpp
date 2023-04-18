@@ -39,8 +39,6 @@ vector<Vl53lxSensorReadings> Vl53lxSensor::getLatestMeasurement()
   VL53LX_MultiRangingData_t *pMultiRangingData = &MultiRangingData;
   uint8_t NewDataReady = 0;
   int no_of_object_found = 0, j;
-  char report[64];
-
   if (interruptTriggered)
   {
     int status;
@@ -50,11 +48,9 @@ vector<Vl53lxSensorReadings> Vl53lxSensor::getLatestMeasurement()
     {
       status = vl53lxInstance.VL53LX_GetMultiRangingData(pMultiRangingData);
       no_of_object_found = pMultiRangingData->NumberOfObjectsFound;
-      snprintf(report, sizeof(report), "Count=%d, #Objs=%1d ", pMultiRangingData->StreamCount, no_of_object_found);
-      ESP_LOGI("VL", "%s", report);
       for (j = 0; j < no_of_object_found; j++)
       {
-        readings.push_back(Vl53lxSensorReadings{pMultiRangingData->RangeData[j].RangeStatus, pMultiRangingData->RangeData[j].RangeMilliMeter, (float)(pMultiRangingData->RangeData[j].SignalRateRtnMegaCps / 65536.0), (float)(pMultiRangingData->RangeData[j].AmbientRateRtnMegaCps / 65536.0)});
+        readings.push_back(Vl53lxSensorReadings{j, pMultiRangingData->RangeData[j].RangeStatus, pMultiRangingData->RangeData[j].RangeMilliMeter, (float)(pMultiRangingData->RangeData[j].SignalRateRtnMegaCps / 65536.0), (float)(pMultiRangingData->RangeData[j].AmbientRateRtnMegaCps / 65536.0)});
         ESP_LOGI("VL", "status=%d Distance=%dmm Signal=%f Ambient%fmcps", pMultiRangingData->RangeData[j].RangeStatus, pMultiRangingData->RangeData[j].RangeMilliMeter, (float)pMultiRangingData->RangeData[j].SignalRateRtnMegaCps / 65536.0, (float)pMultiRangingData->RangeData[j].AmbientRateRtnMegaCps / 65536.0);
       }
       if (status == 0)

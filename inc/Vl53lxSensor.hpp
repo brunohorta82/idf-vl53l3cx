@@ -10,21 +10,27 @@ unsigned long millis();
 class Vl53lxSensorReadings
 {
 private:
+  int idx;
   uint8_t status;
   int16_t distance;
   float signalRateRtnMegaCps;
   float ambientRateRtnMegaCps;
 
 public:
-  Vl53lxSensorReadings(uint8_t status,
+  Vl53lxSensorReadings(int idx, uint8_t status,
                        int16_t distance,
                        float signalRateRtnMegaCps,
                        float ambientRateRtnMegaCps)
   {
+    this->idx = idx;
     this->status = status;
     this->distance = distance;
     this->signalRateRtnMegaCps = signalRateRtnMegaCps;
     this->ambientRateRtnMegaCps = ambientRateRtnMegaCps;
+  }
+  int getIdx()
+  {
+    return idx;
   }
   uint8_t getStatus()
   {
