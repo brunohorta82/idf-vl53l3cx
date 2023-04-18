@@ -25,7 +25,7 @@ Vl53lxSensor::Vl53lxSensor(
   gpio_config(&io_conf);
   gpio_install_isr_service(0);
   gpio_isr_handler_add((gpio_num_t)interruptPin, intaISR, (void *)interruptPin);
-  if (ESP_OK == error)
+  if (ESP_OK != error)
     ESP_LOGE("VL53LX", "ERROR: %d", error);
   clearInterrupt();
 }
