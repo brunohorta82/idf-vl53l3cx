@@ -9,10 +9,39 @@ using namespace Components;
 unsigned long millis();
 class Vl53lxSensorReadings
 {
+private:
   uint8_t status;
   int16_t distance;
-  FixPoint1616_t signalRateRtnMegaCps;
-  FixPoint1616_t ambientRateRtnMegaCps;
+  float signalRateRtnMegaCps;
+  float ambientRateRtnMegaCps;
+
+public:
+  Vl53lxSensorReadings(uint8_t status,
+                       int16_t distance,
+                       float signalRateRtnMegaCps,
+                       float ambientRateRtnMegaCps)
+  {
+    this->status = status;
+    this->distance = distance;
+    this->signalRateRtnMegaCps = signalRateRtnMegaCps;
+    this->ambientRateRtnMegaCps = ambientRateRtnMegaCps;
+  }
+  uint8_t getStatus()
+  {
+    return status;
+  }
+  int16_t getDistance()
+  {
+    return distance;
+  }
+  float getSignalRateRtnMegaCps()
+  {
+    return signalRateRtnMegaCps;
+  }
+  float getAmbientRateRtnMegaCps()
+  {
+    return ambientRateRtnMegaCps;
+  }
 };
 class Vl53lxSensor
 {
