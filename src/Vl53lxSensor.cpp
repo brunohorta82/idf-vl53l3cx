@@ -50,6 +50,8 @@ vector<Vl53lxSensorReadings> Vl53lxSensor::getLatestMeasurement()
       no_of_object_found = pMultiRangingData->NumberOfObjectsFound;
       for (j = 0; j < no_of_object_found; j++)
       {
+        if (pMultiRangingData->RangeData[j].RangeStatus != 0)
+          continue;
         readings.push_back(Vl53lxSensorReadings{j, pMultiRangingData->RangeData[j].RangeStatus, pMultiRangingData->RangeData[j].RangeMilliMeter, (float)(pMultiRangingData->RangeData[j].SignalRateRtnMegaCps / 65536.0), (float)(pMultiRangingData->RangeData[j].AmbientRateRtnMegaCps / 65536.0)});
         ESP_LOGI("VL", "status=%d Distance=%dmm Signal=%f Ambient%fmcps", pMultiRangingData->RangeData[j].RangeStatus, pMultiRangingData->RangeData[j].RangeMilliMeter, (float)pMultiRangingData->RangeData[j].SignalRateRtnMegaCps / 65536.0, (float)pMultiRangingData->RangeData[j].AmbientRateRtnMegaCps / 65536.0);
       }
