@@ -17,13 +17,26 @@ Vl53lxSensor::Vl53lxSensor(
   vl53lxInstance.begin();
   vl53lxInstance.VL53LX_Off();
   error = vl53lxInstance.InitSensor(sensorDeviceAddress);
-  gpio_config_t io_conf = {};
-  io_conf.mode = GPIO_MODE_INPUT;
-  io_conf.intr_type = GPIO_INTR_NEGEDGE;
-  io_conf.pin_bit_mask = (1ULL << interruptPin);
-  io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-  io_conf.pull_up_en = GPIO_PULLUP_ENABLE;
-  gpio_config(&io_conf);
+  if (interruptPin != GPIO_NUM_NC)
+  {
+    gpio_config_t io_conf = {};
+    io_conf.mode = GPIO_MODE_INPUT;
+    io_conf.intr_type = GPIO_INTR_NEGEDGE;
+    io_conf.pin_bit_mask = (1ULL << interruptPin);
+    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+    io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+    gpio_config(&io_conf);
+  }
+  if (xshutPin != GPIO_NUM_NC)
+  {
+    gpio_config_t io_conf = {};
+    io_conf.mode = GPIO_MODE_OUTPUT;
+    io_conf.intr_type = GPIO_INTR_NEGEDGE;
+    io_conf.pin_bit_mask = (1ULL << xshutPin);
+    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+    io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+    gpio_config(&io_conf);
+  }
   gpio_install_isr_service(0);
   gpio_isr_handler_add((gpio_num_t)interruptPin, intaISR, (void *)interruptPin);
   if (ESP_OK == error)
