@@ -26,6 +26,8 @@ Vl53lxSensor::Vl53lxSensor(
     io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
     io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
     gpio_config(&io_conf);
+    gpio_install_isr_service(0);
+    gpio_isr_handler_add((gpio_num_t)interruptPin, intaISR, (void *)interruptPin);
   }
   if (xshutPin != GPIO_NUM_NC)
   {
@@ -37,8 +39,7 @@ Vl53lxSensor::Vl53lxSensor(
     io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
     gpio_config(&io_conf);
   }
-  gpio_install_isr_service(0);
-  gpio_isr_handler_add((gpio_num_t)interruptPin, intaISR, (void *)interruptPin);
+
   if (ESP_OK == error)
     ESP_LOGE("VL53LX", "ERROR: %d", error);
   vl53lxInstance.VL53LX_ClearInterruptAndStartMeasurement();
@@ -52,11 +53,23 @@ vector<Vl53lxSensorReadings> Vl53lxSensor::getLatestMeasurement()
   VL53LX_MultiRangingData_t *pMultiRangingData = &MultiRangingData;
   uint8_t NewDataReady = 0;
   int no_of_object_found = 0, j;
-  if (interruptTriggered)
+
+  if (interruptTriggered || CONFIG_VL53_INTERRUPT_PIN == GPIO_NUM_NC)
   {
     int status;
-    interruptTriggered = false;
-    status = vl53lxInstance.VL53LX_GetMeasurementDataReady(&NewDataReady);
+    if (CONFIG_VL53_INTERRUPT_PIN == GPIO_NUM_NC)
+    {
+      do
+      {
+        status = vl53lxInstance.VL53LX_GetMeasurementDataReady(&NewDataReady);
+      } while (!NewDataReady);
+    }
+    else
+    {
+      interruptTriggered = false;
+      status = vl53lxInstance.VL53LX_GetMeasurementDataReady(&NewDataReady);
+    }
+
     if ((!status) && (NewDataReady != 0))
     {
       status = vl53lxInstance.VL53LX_GetMultiRangingData(pMultiRangingData);
