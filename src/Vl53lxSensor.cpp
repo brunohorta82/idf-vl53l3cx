@@ -5,7 +5,7 @@
 #include "interrupt.hpp"
 #include <esp_log.h>
 #include "driver/gpio.h"
-#ifdef VL53L3CX_ACTIVE
+#ifdef CONFIG_VL53L3CX_ACTIVE
 Vl53lxSensor::Vl53lxSensor(
     int xshutPin,
     int interruptPin,
