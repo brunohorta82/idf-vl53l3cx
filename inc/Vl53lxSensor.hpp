@@ -6,7 +6,6 @@
 #include "vector"
 using namespace std;
 using namespace Components;
-unsigned long millis();
 class Vl53lxSensorReadings
 {
 private:
