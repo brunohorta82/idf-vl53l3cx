@@ -15,8 +15,7 @@ Vl53lxSensor::Vl53lxSensor(
 {
   VL53LX_Error error = VL53LX_ERROR_NONE;
   vl53lxInstance.begin();
-  vl53lxInstance.VL53LX_Off();
-  error = vl53lxInstance.InitSensor(sensorDeviceAddress);
+
   if (interruptPin != GPIO_NUM_NC)
   {
     gpio_config_t io_conf = {};
@@ -33,13 +32,14 @@ Vl53lxSensor::Vl53lxSensor(
   {
     gpio_config_t io_conf = {};
     io_conf.mode = GPIO_MODE_OUTPUT;
-    io_conf.intr_type = GPIO_INTR_NEGEDGE;
+    io_conf.intr_type = GPIO_INTR_DISABLE;
     io_conf.pin_bit_mask = (1ULL << xshutPin);
     io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
     io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
     gpio_config(&io_conf);
   }
-
+  vl53lxInstance.VL53LX_Off();
+  error = vl53lxInstance.InitSensor(sensorDeviceAddress);
   if (ESP_OK == error)
     ESP_LOGE("VL53LX", "ERROR: %d", error);
   vl53lxInstance.VL53LX_ClearInterruptAndStartMeasurement();

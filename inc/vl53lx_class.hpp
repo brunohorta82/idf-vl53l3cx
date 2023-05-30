@@ -43,6 +43,7 @@
 #include "vl53lx_def.hpp"
 #include "I2C.hpp"
 #include "freertos/FreeRTOS.h"
+#include "driver/gpio.h"
 #define delay(ms) esp_rom_delay_us(ms * 1000)
 #define VL53LX_DEFAULT_DEVICE_ADDRESS 0x52
 
@@ -114,7 +115,7 @@ public:
     {
         if (gpio0 >= 0)
         {
-            // pinMode(gpio0, OUTPUT);
+            gpio_set_direction((gpio_num_t)gpio0, GPIO_MODE_OUTPUT);
         }
         return 0;
     }
@@ -123,7 +124,7 @@ public:
     {
         if (gpio0 >= 0)
         {
-            //  pinMode(gpio0, INPUT);
+            gpio_set_direction((gpio_num_t)gpio0, GPIO_MODE_INPUT);
         }
         return 0;
     }
@@ -139,7 +140,7 @@ public:
     {
         if (gpio0 >= 0)
         {
-            //  digitalWrite(gpio0, HIGH);
+            gpio_set_level((gpio_num_t)gpio0, 1);
         }
         delay(10);
     }
@@ -153,7 +154,7 @@ public:
     {
         if (gpio0 >= 0)
         {
-            // digitalWrite(gpio0, LOW);
+            gpio_set_level((gpio_num_t)gpio0, 0);
         }
         delay(10);
     }
