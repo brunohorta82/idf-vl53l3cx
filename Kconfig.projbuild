@@ -16,11 +16,11 @@ menu "VL53L3CX"
         default 18 
         depends on VL53L3CX_ACTIVE
     config VL53_DISTANCE_OFFSET
-        int "Distance Offset (cm)"
-        default 10 
+        int "Distance Offset (mm)"
+        default 5 
         depends on VL53L3CX_ACTIVE
     config VL53_MIN_DISTANCE
-        int "Min Distance (cm)"
+        int "Min Distance (mm)"
         default 30 
         depends on VL53L3CX_ACTIVE      
 endmenu
