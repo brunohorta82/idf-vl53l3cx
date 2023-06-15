@@ -9,7 +9,7 @@ menu "VL53L3CX"
         depends on VL53L3CX_ACTIVE
     config VL53_SHUTDOWN_PIN
         int "Shutdown Pin"
-        default -1
+        default 9
         depends on VL53L3CX_ACTIVE
         help 
             ex: 17
